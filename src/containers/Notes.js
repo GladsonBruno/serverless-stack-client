@@ -4,7 +4,7 @@ import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import config from "../config";
 import "./Notes.css";
-import { s3Upload } from "../libs/awsLib";
+import { s3Upload, s3Delete } from "../libs/awsLib";
 
 export default function Notes(props) {
   const file = useRef(null);
@@ -52,7 +52,13 @@ export default function Notes(props) {
   function saveNote(note) {
     return API.put("notes", `/notes/${props.match.params.id}`, {
       body: note
-    });
+    }).then(
+      response => {
+        console.log(response);
+      }
+      ).catch(e => {
+        console.log(e);
+      });
   }
   
   async function handleSubmit(event) {
@@ -86,6 +92,10 @@ export default function Notes(props) {
     }
   }
   
+  function deleteNote() {
+    return API.del("notes", `/notes/${props.match.params.id}`);
+  }
+  
   async function handleDelete(event) {
     event.preventDefault();
   
@@ -98,6 +108,15 @@ export default function Notes(props) {
     }
   
     setIsDeleting(true);
+  
+    try {
+      await deleteNote();
+      await s3Delete(note.attachment);
+      props.history.push("/");
+    } catch (e) {
+      alert(e);
+      setIsDeleting(false);
+    }
   }
   
   return (
