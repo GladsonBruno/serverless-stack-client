@@ -6,7 +6,7 @@ import Routes from "./Routes";
 
 import { LinkContainer } from "react-router-bootstrap";
 import { Auth } from "aws-amplify";
-
+import config from "./config";
 
 function App(props) {
   const [isAuthenticating, setIsAuthenticating] = useState(true);
@@ -27,6 +27,7 @@ function App(props) {
     }
 
     setIsAuthenticating(false);
+    componentDidMount();
   }
 
   async function handleLogout() {
@@ -35,6 +36,40 @@ function App(props) {
     userHasAuthenticated(false);
     
     props.history.push("/login");
+  }
+
+  async function componentDidMount() {
+    loadFacebookSDK();
+  
+    try {
+      await Auth.currentAuthenticatedUser();
+      userHasAuthenticated(true);
+    } catch (e) {
+      if (e !== "not authenticated") {
+        alert(e);
+      }
+    }
+  
+    setIsAuthenticating(false);
+  }
+  
+  function loadFacebookSDK() {
+    window.fbAsyncInit = function() {
+      window.FB.init({
+        appId            : config.social.FB,
+        autoLogAppEvents : true,
+        xfbml            : true,
+        version          : 'v3.1'
+      });
+    };
+  
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "https://connect.facebook.net/en_US/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
   }
 
   return (
@@ -51,6 +86,9 @@ function App(props) {
             <Nav pullRight>
               {isAuthenticated ? (
                 <>
+                  <LinkContainer to="/notes/new">
+                    <NavItem>New Note</NavItem>
+                  </LinkContainer>
                   <LinkContainer to="/settings">
                     <NavItem>Settings</NavItem>
                   </LinkContainer>

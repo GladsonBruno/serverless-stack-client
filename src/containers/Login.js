@@ -4,6 +4,7 @@ import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import { useFormFields } from "../libs/hooksLib";
 import "./Login.css";
+import FacebookButton from "../components/FacebookButton";
 
 export default function Login(props) {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,9 +31,17 @@ export default function Login(props) {
     }
   }
 
+  function handleFbLogin () {
+    props.userHasAuthenticated(true);
+  };
+
   return (
     <div className="Login">
       <form onSubmit={handleSubmit}>
+      <FacebookButton
+          onLogin={handleFbLogin}
+        />
+        <hr />
         <FormGroup controlId="email" bsSize="large">
           <ControlLabel>Email</ControlLabel>
           <FormControl
