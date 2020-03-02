@@ -1,5 +1,6 @@
 export default {
     MAX_ATTACHMENT_SIZE: 5000000,
+    STRIPE_KEY: "pk_test_8l8Y1tSAroVQicyvommUmC6T00bMxSBpDN",
     s3: {
       REGION: "sa-east-1",
       BUCKET: "serverless-estudo-notes-app-uploads"
